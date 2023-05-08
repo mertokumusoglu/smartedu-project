@@ -1,4 +1,7 @@
+const User = require('../models/User');
+
 exports.getIndexPage = (req, res) => {
+  console.log(req.session.userID)
   res.status(200).render('index', {
     page_name: 'index',
   });
@@ -13,12 +16,6 @@ exports.getAboutPage = (req, res) => {
 exports.getCoursesPage = (req, res) => {
   res.status(200).render('courses', {
     page_name: 'courses',
-  });
-};
-
-exports.getDashboardPage = (req, res) => {
-  res.status(200).render('dashboard', {
-    page_name: 'dashboard',
   });
 };
 
@@ -39,3 +36,10 @@ exports.getRegisterPage = (req, res) => {
     page_name: 'register',
   });
 };
+
+exports.getDashboardPage = async (req, res) => {
+  const user = await User.findOne({_id: req.session.userID});
+  res.status(200).render("dashboard",{
+  page_name: "dashboard",
+  user});
+}

@@ -5,9 +5,9 @@ const router = express.Router();
 
 router.get("/", pageController.getIndexPage)
 router.get("/about", pageController.getAboutPage)
-router.get("/dashboard", pageController.getDashboardPage)
 router.get("/contact", pageController.getContactPage)
 router.get("/login", pageController.getLoginPage)
 router.get("/register", pageController.getRegisterPage)
+router.route("/users/dashboard").get(pageController.getDashboardPage)
 
 module.exports = router
