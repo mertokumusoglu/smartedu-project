@@ -2,6 +2,7 @@ const mongoose = require("mongoose")
 const { Schema } = mongoose;
 const slugify = require("slugify");
 const Category = require("../models/Category")
+const User = require("../models/User")
 
 const CourseSchema = new Schema({
     name: {
@@ -18,6 +19,10 @@ const CourseSchema = new Schema({
     category: {
         type: mongoose.Schema.Types.ObjectId,
         ref: Category
+    },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: User
     },
     dateOfCreated: {
         type: Date,
