@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const flash = require("connect-flash");
+const methodOverride = require("method-override");
 const pageRoute = require('./routes/pageRoute');
 const courseRoute = require('./routes/courseRoute');
 const categoryRoute = require("./routes/categoryRoute");
@@ -39,6 +40,11 @@ app.use("*", (req, res, next) => {
   next();
 });
 
+app.use(
+  methodOverride("_method", {
+    methods : ["POST", "GET"]
+})
+)
 // routes
 app.use('/', pageRoute);
 app.use('/courses', courseRoute);
