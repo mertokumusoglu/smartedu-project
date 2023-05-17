@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Course = require("../models/Course");
 const bcrypt = require('bcrypt');
 const { validationResult} = require("express-validator");
 
@@ -49,3 +50,17 @@ exports.logoutUser = (req, res) => {
     res.redirect('/');
   });
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    await User.findOneAndRemove({_id: req.params.id});
+    await Course.deleteMany({user: req.params.id});
+    
+    res.status(200).redirect("/users/dashboard")
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      error
+    })
+  }
+}

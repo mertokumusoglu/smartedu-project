@@ -1,12 +1,19 @@
-const User = require("../models/User")
-const Category = require("../models/Category")
-const Course = require("../models/Course")
-const nodemailer = require("nodemailer")
+const User = require('../models/User');
+const Category = require('../models/Category');
+const Course = require('../models/Course');
+const nodemailer = require('nodemailer');
 
-exports.getIndexPage = (req, res) => {
-  console.log(req.session.userID)
+exports.getIndexPage = async (req, res) => {
+  const courses = await Course.find().sort("-dateOfCreated").limit(2);
+  const totalCourses = await Course.find().countDocuments();
+  const totalStudents = await User.countDocuments({role: "student"})
+  const totalTeachers = await User.countDocuments({role: "teacher"})
   res.status(200).render('index', {
     page_name: 'index',
+    courses,
+    totalCourses,
+    totalStudents,
+    totalTeachers
   });
 };
 
@@ -41,19 +48,23 @@ exports.getRegisterPage = (req, res) => {
 };
 
 exports.getDashboardPage = async (req, res) => {
-  const user = await User.findOne({_id: req.session.userID}).populate("courses");
+  const user = await User.findOne({ _id: req.session.userID }).populate('courses');
   const categories = await Category.find();
-  const courses = await Course.find({user: req.session.userID});
-  res.status(200).render("dashboard",{
-  page_name: "dashboard",
-  user,
-  courses,
-  categories});
-}
+  const courses = await Course.find({ user: req.session.userID });
+  const users = await User.find();
+  console.log(users.countDocument);
+  res.status(200).render('dashboard', {
+    page_name: 'dashboard',
+    user,
+    courses,
+    categories,
+    users
+  });
+};
 
 exports.sendEmail = async (req, res) => {
   try {
-  const outputMessage = `
+    const outputMessage = `
   <h1> Mail details </h1>
   <ul>
     <li> Name: ${req.body.name}  </li>
@@ -61,32 +72,31 @@ exports.sendEmail = async (req, res) => {
   </ul>
   <h1> Message </h1>
   <p> ${req.body.message} </p>
-  `
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    auth: {
+  `;
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.ethereal.email',
+      port: 587,
+      auth: {
         user: '',
-        pass: ''
-    }
-});
-  let message = await transporter.sendMail({
-    from: "",
-    to: "",
-    subject: "SmartEdu Email Subject",
-    html: outputMessage
-  });
-  console.log("Message sent: %s", message.messageId);
-  
-  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(message));
+        pass: '',
+      },
+    });
+    let message = await transporter.sendMail({
+      from: '',
+      to: '',
+      subject: 'SmartEdu Email Subject',
+      html: outputMessage,
+    });
+    console.log('Message sent: %s', message.messageId);
 
-  req.flash("success", "We Received your message succesfully");
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(message));
 
-  res.status(200).redirect('contact');
+    req.flash('success', 'We Received your message succesfully');
 
-} catch (error) {
-  req.flash("error", "Something happened!");
+    res.status(200).redirect('contact');
+  } catch (error) {
+    req.flash('error', 'Something happened!');
 
-  res.status(400).redirect("contact")
+    res.status(400).redirect('contact');
   }
-} 
+};
