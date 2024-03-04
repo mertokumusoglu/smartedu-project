@@ -10,7 +10,7 @@ const courseRoute = require('./routes/courseRoute');
 const categoryRoute = require("./routes/categoryRoute");
 const userRoute = require("./routes/userRoute")
 
-mongoose.connect('mongodb://127.0.0.1:27017/smartedu-db');
+mongoose.connect('/*dbURL*/');
 
 // template engine
 app.set('view engine', 'ejs');
